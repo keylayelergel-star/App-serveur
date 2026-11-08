@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Serveur</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
+        header { background: #007bff; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        .controls { display: flex; justify-content: space-around; background: #fff; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        button { padding: 10px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
+        .btn-start { background: #28a745; }
+        .btn-stop { background: #dc3545; }
+        iframe { flex: 1; border: none; width: 100%; }
+    </style>
+</head>
+<body>
+    <header>Mon Serveur - Contrôle & Fichiers</header>
+    <div class="controls">
+        <button class="btn-start" onclick="window.location.href='macrodroid://start_server'">Allumer (WOL)</button>
+        <button class="btn-stop" onclick="alert('Demande d\'extinction envoyée')">Éteindre</button>
+    </div>
+    <!-- Affiche l'interface de votre serveur -->
+    <iframe src="http://192.168.1.12:8080"></iframe>
+</body>
+</html>
