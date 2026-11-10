@@ -3,38 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Serveur - Contrôle</title>
+    <title>Gestion Serveur - Clément</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
-        header { background: #007bff; color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; }
-        .controls { display: flex; justify-content: space-around; background: #fff; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        button { padding: 10px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
-        .btn-start { background: #28a745; }
-        .btn-stop { background: #dc3545; }
-        iframe { flex: 1; border: none; width: 100%; }
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            gap: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            font-size: 0.9rem;
+            background: #e9ecef;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-start { background-color: var(--success); }
+        .btn-stop { background-color: var(--danger); }
+        .btn-role { background-color: #6c757d; }
+        .btn-role.active { background-color: var(--primary); }
+
+        .role-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 10px;
+        }
+
+        .frame-container {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .simulated-view {
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+            text-align: left;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .file-list li {
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
-    <header>Mon Serveur - Contrôle & Fichiers</header>
+    <header>Mon Serveur - Tableau de Bord Interactif</header>
 
-    <div class="controls">
-        <button class="btn-start" onclick="startServer()">Allumer (MacroDroid)</button>
-        <button class="btn-stop" onclick="shutdownServer()">Éteindre</button>
+    <div class="dashboard">
+        <div class="info-grid">
+            <div>IP Locale : <strong>192.168.1.12</strong>[span_1](start_span)[span_1](end_span)</div>
+            <div>Admin : <strong>clement</strong>[span_2](start_span)[span_2](end_span)</div>
+            <div>DynDNS : <strong>clement@servst.freedynamicdns.org</strong>[span_3](start_span)[span_3](end_span)</div>
+            <div>Profil Actif : <strong id="currentRoleDisplay">Admin (Clément)</strong></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-start" onclick="startServer()">Allumer le serveur (MacroDroid)</button>
+            <button class="btn-stop" onclick="shutdownServer()">Éteindre le serveur (sudo poweroff)</button>
+        </div>
+
+        <div class="role-selector">
+            <span>Changer de profil : </span>
+            <button class="btn-role active" id="btnAdmin" onclick="setRole('admin')">Admin</button>
+            <button class="btn-role" id="btnAmi1" onclick="setRole('ami1')">Ami 1</button>
+            <button class="btn-role" id="btnAmi2" onclick="setRole('ami2')">Ami 2</button>
+            <button class="btn-role" id="btnAmi3" onclick="setRole('ami3')">Ami 3</button>
+        </div>
     </div>
 
-    <!-- Affiche l'interface de vos fichiers ou services sur le serveur -->
-    <iframe src="http://192.168.1.12:8080"></iframe>
+    <div class="workspace">
+        <div class="frame-container">
+            <div id="workspaceView" class="simulated-view">
+                <h3>Espace de fichiers - Admin (clement)</h3>
+                <p>Accès complet à tous les dossiers du serveur.</p>
+                <ul class="file-list">
+                    <li>📁 /mnt/1/Films <span>[Accès Total / Écriture]</span></li>
+                    <li>📁 /mnt/2/Series <span>[Accès Total / Écriture]</span></li>
+                    <li>📁 /mnt/3/Sagas <span>[Accès Total / Écriture]</span></li>
+                    <li>📁 /mnt/4/Admin_Privé <span>[Sécurisé]</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <script>
         function startServer() {
-            // Ouvre votre lien MacroDroid pour réveiller le serveur
-            window.location.href = "https://trigger.macrodroid.com/13d37924-6836-4abf-85ea-8d84e14f6737/wakeup";
+            window.open("https://trigger.macrodroid.com/13d37924-6836-4abf-85ea-8d84e14f6737/wakeup", "_blank");
+            alert("Signal d'allumage (MacroDroid) envoyé !");
         }
 
         function shutdownServer() {
-            if(confirm("Voulez-vous vraiment éteindre le serveur ?")) {
-                alert("Ordre d'extinction envoyé (assurez-vous d'avoir configuré le webhook ou l'accès SSH distant).");
+            if(confirm("Voulez-vous vraiment envoyer l'ordre d'extinction (sudo poweroff) ?")) {
+                alert("Requête d'extinction simulée envoyée au serveur 192.168.1.12:5000[span_4](start_span)[span_4](end_span).");
+            }
+        }
+
+        function setRole(role) {
+            document.querySelectorAll('.btn-role').forEach(b => b.classList.remove('active'));
+            
+            const view = document.getElementById('workspaceView');
+            const roleDisplay = document.getElementById('currentRoleDisplay');
+
+            if (role === 'admin') {
+                document.getElementById('btnAdmin').classList.add('active');
+                roleDisplay.innerText = "Admin (Clément)";
+                view.innerHTML = `
+                    <h3>Espace de fichiers - Admin (clement)</h3>
+                    <p>Accès complet à tous les dossiers du serveur.</p>
+                    <ul class="file-list">
+                        <li>📁 /mnt/1/Films <span>[Accès Total / Écriture]</span></li>
+                        <li>📁 /mnt/2/Series <span>[Accès Total / Écriture]</span></li>
+                        <li>📁 /mnt/3/Sagas <span>[Accès Total / Écriture]</span></li>
+                        <li>📁 /mnt/4/Admin_Privé <span>[Sécurisé]</span></li>
+                    </ul>`;
+            } else if (role === 'ami1') {
+                document.getElementById('btnAmi1').classList.add('active');
+                roleDisplay.innerText = "Ami 1";
+                view.innerHTML = `
+                    <h3>Espace de fichiers - Ami 1</h3>
+                    <p>Accès partagé et restreint aux dossiers autorisés.</p>
+                    <ul class="file-list">
+                        <li>📁 /mnt/1/Films <span>[Lecture seule]</span></li>
+                        <li>📁 /mnt/2/Series <span>[Lecture / Écriture]</span></li>
+                    </ul>`;
+            } else if (role === 'ami2') {
+                document.getElementById('btnAmi2').classList.add('active');
+                roleDisplay.innerText = "Ami 2";
+                view.innerHTML = `
+                    <h3>Espace de fichiers - Ami 2</h3>
+                    <p>Accès partagé et restreint aux dossiers autorisés.</p>
+                    <ul class="file-list">
+                        <li>📁 /mnt/3/Sagas <span>[Lecture seule]</span></li>
+                    </ul>`;
+            } else if (role === 'ami3') {
+                document.getElementById('btnAmi3').classList.add('active');
+                roleDisplay.innerText = "Ami 3";
+                view.innerHTML = `
+                    <h3>Espace de fichiers - Ami 3</h3>
+                    <p>Accès partagé et restreint aux dossiers autorisés.</p>
+                    <ul class="file-list">
+                        <li>📁 /mnt/1/Films <span>[Lecture seule]</span></li>
+                    </ul>`;
             }
         }
     </script>
