@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Serveur</title>
+    <title>Mon Serveur - Contrôle</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
-        header { background: #007bff; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        header { background: #007bff; color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; }
         .controls { display: flex; justify-content: space-around; background: #fff; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         button { padding: 10px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
         .btn-start { background: #28a745; }
@@ -15,12 +15,28 @@
     </style>
 </head>
 <body>
+
     <header>Mon Serveur - Contrôle & Fichiers</header>
+
     <div class="controls">
-        <button class="btn-start" onclick="window.location.href='macrodroid://start_server'">Allumer (WOL)</button>
-        <button class="btn-stop" onclick="alert('Demande d\'extinction envoyée')">Éteindre</button>
+        <button class="btn-start" onclick="startServer()">Allumer (MacroDroid)</button>
+        <button class="btn-stop" onclick="shutdownServer()">Éteindre</button>
     </div>
-    <!-- Affiche l'interface de votre serveur -->
+
+    <!-- Affiche l'interface de vos fichiers ou services sur le serveur -->
     <iframe src="http://192.168.1.12:8080"></iframe>
+
+    <script>
+        function startServer() {
+            // Ouvre votre lien MacroDroid pour réveiller le serveur
+            window.location.href = "https://trigger.macrodroid.com/13d37924-6836-4abf-85ea-8d84e14f6737/wakeup";
+        }
+
+        function shutdownServer() {
+            if(confirm("Voulez-vous vraiment éteindre le serveur ?")) {
+                alert("Ordre d'extinction envoyé (assurez-vous d'avoir configuré le webhook ou l'accès SSH distant).");
+            }
+        }
+    </script>
 </body>
 </html>
